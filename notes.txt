@@ -1,0 +1,25 @@
+--------mongodb---------
+access shell:
+
+mongosh -u root -p --authenticationDatabase admin fintech
+
+mongosh --username fintech --password
+
+mongosh -u fintech --p
+
+-----
+use fintech
+
+db.createUser({
+    user: "fintech",
+    pwd: passwordPrompt(),
+    roles: [ { role: "readWrite", db: "fintech" } ]
+})
+
+db.createUser({
+    user: "<username>",
+    pwd: passwordPrompt(),
+    roles: [ { role: "<role>", db: "<database_name>" } ]
+})
+
+----------

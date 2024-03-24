@@ -4,18 +4,35 @@ x-default-networks: &default-networks
     - finance
 
 services:
+#    finance-db:
+#        image: mysql:5.7
+#        container_name: finance-db
+#        restart: always
+#        environment:
+#            MYSQL_ROOT_PASSWORD: root
+#            MYSQL_DATABASE: fintech
+#            MYSQL_USER: admin
+#            MYSQL_PASSWORD: admin
+#        ports:
+#            - "33060:3306"
+#        volumes:
+#            - mysql-data:/var/lib/mysql
+#            - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+#        networks: *default-networks
+
     finance-mongodb:
         container_name: finance-mongodb
         image: mongo:7.0.6
         restart: always
+        command: [--auth]
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: root
+            MONGO_INITDB_DATABASE: fintech
         ports:
             - "37017:27017"
         volumes:
             - mongo-data:/data/db
-#        networks: *default-networks
 
     finance-backend-app:
         container_name: finance-backend
@@ -33,15 +50,12 @@ services:
         env_file:
             - .env
         environment:
-            - VIRTUAL_HOST=finance-backend.local
+            - VIRTUAL_HOST=api.finance.local
             - VIRTUAL_PORT=3000
-#        networks:
-#            finance:
-#                aliases:
-#                    - finance-backend.local
 
 volumes:
     mongo-data:  # Named volume for persistent MongoDB data
+    mysql-data:  # Named volume for persistent MySQL data
 
 networks:
     finance:

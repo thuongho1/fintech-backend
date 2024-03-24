@@ -1,23 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { Connection, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserRepository } from './user.repository';
+import { generateSalt, hashPassword } from '../utils/password.utils';
 
 @Injectable()
 export class UserService {
-  constructor(
-//    @InjectConnection() private connection: Connection,
-    private userRepository: UserRepository,
-    @InjectModel(User.name) private userModel: Model<User>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async create(createUserDto: CreateUserDto) {
-    return this.userRepository.create(createUserDto);
+    const createdUser = new this.userModel(createUserDto);
+    const salt = await generateSalt(); // Generate salt
+//    const hashedPassword = await hashPassword(createUserDto.password, salt); // Hash password
+
+//    createdUser.salt = salt;
+//    createdUser.password = hashedPassword;
+
+    return createdUser.save();
+  }
+
+  async findByName(name: string): Promise<User> {
+    return this.userModel.findOne({ name }).exec();
+  }
+
+  async findById(id: string): Promise<User | null> {
+    return this.userModel.findById(id).populate('roles');
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.findAll();
+    return this.userModel.find().populate('roles').exec();
   }
 }
