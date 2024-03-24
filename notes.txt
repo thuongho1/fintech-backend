@@ -22,4 +22,6 @@ db.createUser({
     roles: [ { role: "<role>", db: "<database_name>" } ]
 })
 
-----------
+----------docker---------
+ docker-compose down finance-backend-app --rmi=local
+

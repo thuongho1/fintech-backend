@@ -1,11 +1,13 @@
 FROM node:21-alpine as base
 WORKDIR /var/www
-COPY package.json yarn.lock ./
+RUN apk update
+RUN apk add --no-cache build-base gcc musl-dev
+COPY package.json ./
 
 FROM base as build
 RUN yarn install
 COPY ./ ./
-RUN yarn run build
+RUN npm run build
 
 FROM base as development
 ENV NODE_ENV=development
@@ -16,7 +18,7 @@ CMD ["yarn", "run", "start:dev"]
 
 FROM base as production
 ENV NODE_ENV=production
-RUN yarn install --frozen-lockfile
+RUN npm install --frozen-lockfile
 COPY --chown=node:node ./ ./
 COPY --chown=node:node --from=build /var/www/dist ./dist
 USER node

@@ -12,10 +12,10 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const createdUser = new this.userModel(createUserDto);
     const salt = await generateSalt(); // Generate salt
-//    const hashedPassword = await hashPassword(createUserDto.password, salt); // Hash password
+    const hashedPassword = await hashPassword(createUserDto.password, salt); // Hash password
 
-//    createdUser.salt = salt;
-//    createdUser.password = hashedPassword;
+    createdUser.salt = salt;
+    createdUser.password = hashedPassword;
 
     return createdUser.save();
   }
